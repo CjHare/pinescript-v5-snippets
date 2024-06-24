@@ -14,7 +14,7 @@ PineScript can only be run in the interpreter provided in the SuperCharts sectio
 Always happy to accept contributions, and here's an outline of the development processes to help you along!
 
 ### Git: feature branches
-The `main` branch is always ready for release, with features developed on their own branches and rebased merged only when they are done.
+The `main` branch is always ready for release, with features developed on their own branches and squash merged only when they are done.
 
 Following the approach outlined by [Trunk based development](https://trunkbaseddevelopment.com/)
 
