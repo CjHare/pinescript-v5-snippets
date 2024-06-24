@@ -1,2 +1,3 @@
-# pinescript-v5-snippets
+# PinesSript v5 Snippets
 PineScript v5 Snippets
+
