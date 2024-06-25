@@ -1,0 +1,30 @@
+// RSI indicator
+//
+// Input configuration
+// - value: daily close
+// - length: 14 days
+// - offset: none
+//
+// Output:
+// - RSI solid line
+// - Overbought dotted line
+// - Oversold dotted line
+
+
+//@version=5
+indicator(title="Relarive Strength Index", shorttitle="RSI with timeframe", overlay=true, timeframe="D", timeframe_gaps=true)
+
+// Configurable input fields
+len = input.int(14, minval=1, title="Length")
+src = input.source(close, title="Source")
+offset = input.int(title="Offset", defval=0, minval=-500, maxval=500)
+
+// RSI is between 0 and 100
+rsi = ta.rsi(src, len)
+
+// Plot RSI line
+plot(rsi, color=color.blue, title="RSI", offset=offset)
+
+// Plot horizontal lines
+hline(80, "Overbought", color=color.gray, linestyle=hline.style_dotted)
+hline(20, "Oversold", color=color.gray, linestyle=hline.style_dotted)
