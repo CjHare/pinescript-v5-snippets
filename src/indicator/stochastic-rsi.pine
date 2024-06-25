@@ -1,0 +1,45 @@
+// Stochastic RSI indicator
+//
+// Input configuration
+// - value: daily close
+// - RSI length: 14 days
+// - kLength: 3 RSI entries
+// - dLength: 3 k entries
+//
+// Output:
+// - %K: solid line
+// - %D: solid line
+// - StochasticRSI: solid line
+// - Overbought: dotted line
+// - Oversold: dotted line
+
+//@version=5
+indicator("Stochastic RSI", shorttitle="StochRSI", overlay=false, timeframe="D", timeframe_gaps=true)
+
+// Input parameters
+rsiLength = input.int(14, title="RSI Length")
+stochLength = input.int(14, title="Stochastic Length")
+kLength = input.int(3, title="%K Length")
+dLength = input.int(3, title="%D Length")
+
+// Calculate RSI
+rsi = ta.rsi(close, rsiLength)
+
+// Calculate Stochastic RSI
+rsiLowest = ta.lowest(rsi, stochLength)
+rsiHighest = ta.highest(rsi, stochLength)
+stochRsi = (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
+
+// Calculate %K and %D
+k = ta.sma(stochRsi, kLength)
+d = ta.sma(k, dLength)
+
+// Plot %K, %D and StochRSI
+plot(k, title="%K", color=color.blue)
+plot(d, title="%D", color=color.red)
+plot(stochRsi, title="stochRSI", color=color.fuchsia)
+
+// Plot horizontal lines
+hline(80, "Overbought", color=color.red, linestyle=hline.style_dotted)
+hline(20, "Oversold", color=color.green, linestyle=hline.style_dotted)
+hline(50, "Middle", color=color.gray, linestyle=hline.style_dotted)
