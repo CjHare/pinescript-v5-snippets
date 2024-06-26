@@ -1,0 +1,44 @@
+// ADX indicator
+//
+// Input configuration
+// - adxPeriod: 14 days; how many periods are used when calculating the TR, +DM, and -DM
+// - adxSmoothPeriod: 14 days; how many DX values are smoothed to create the ADX line
+//
+// Output:
+// - RSI solid line
+// - Overbought dotted line
+// - Oversold dotted line
+
+//@version=5
+indicator("Average Directional Index (ADX)", overlay=false, timeframe="D", timeframe_gaps=true)
+
+// Input for ADX period
+adxPeriod = input(14, title="ADX Period", group = "ADX Settings")
+adxSmoothPeriod = input(14, title="ADX Smoothing Period", group = "ADX Settings")
+
+directionalMovement(len) =>
+	up = ta.change(high)
+	down = -ta.change(low)
+	truerange = ta.rma(ta.tr, len)
+	plusDI = fixnan(100 * ta.rma(up > down and up > 0 ? up : 0, len) / truerange)
+	minusDI = fixnan(100 * ta.rma(down > up and down > 0 ? down : 0, len) / truerange)
+	[plusDI, minusDI]
+
+adx(directionLength, adxLength) =>
+	[plusDI, minusDI] = directionalMovement(directionLength)
+	sum = plusDI + minusDI
+	adx = 100 * ta.rma(math.abs(plusDI - minusDI) / (sum == 0 ? 1 : sum), adxLength)
+    [adx,plusDI, minusDI]
+
+[adx, plusDI, minusDI] = adx(adxSmoothPeriod, adxPeriod)
+
+// Plot the ADX line
+plot(adx, title="ADX", color=color.blue)
+
+// Plot +DI and -DI lines (for reference)
+plot(plusDI, title="+DI", color=color.green)
+plot(minusDI, title="-DI", color=color.red)
+
+// Plot levels for better visualization
+hline(20, "Low Level", color=color.gray)
+hline(40, "High Level", color=color.gray)
