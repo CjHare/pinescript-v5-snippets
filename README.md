@@ -51,7 +51,7 @@ Recommended format:
 Within the constraints that PineScripts brings, a feature is done when...
 
 - Code Completion: All code is written, checked in, and reviewed.
+- Manual Test: Verify the functional correctness using TradingView.
 - Code Review: The code has been peer-reviewed and approved.
 - Documentation: Relevant documentation is updated, including user manuals, technical documentation, and comments in the code.
-- User Acceptance Testing (UAT): The increment has been tested by users and any feedback has been addressed.
 - Bug Fixes: All known critical bugs have been fixed and there are no high-severity bugs remaining.
