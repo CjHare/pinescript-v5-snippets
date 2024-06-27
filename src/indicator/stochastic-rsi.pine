@@ -22,17 +22,17 @@ stochLength = input.int(14, title="Stochastic Length")
 kLength = input.int(3, title="%K Length")
 dLength = input.int(3, title="%D Length")
 
-// Calculate RSI
 rsi = ta.rsi(close, rsiLength)
 
-// Calculate Stochastic RSI
-rsiLowest = ta.lowest(rsi, stochLength)
-rsiHighest = ta.highest(rsi, stochLength)
-stochRsi = (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
+stochRSI(rsi) =>
+    rsiLowest = ta.lowest(rsi, stochLength)
+    rsiHighest = ta.highest(rsi, stochLength)
+    stochRsi = (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
+    k = ta.sma(stochRsi, kLength)
+    d = ta.sma(k, dLength)
+    [stochRsi, k, d]
 
-// Calculate %K and %D
-k = ta.sma(stochRsi, kLength)
-d = ta.sma(k, dLength)
+[stochRsi, k, d] = stochRSI(rsi)
 
 // Plot %K, %D and StochRSI
 plot(k, title="%K", color=color.blue)
