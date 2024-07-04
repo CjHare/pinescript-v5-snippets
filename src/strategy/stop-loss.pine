@@ -1,0 +1,37 @@
+// SMA Crossover Trailing Stop Loss Strategy
+//
+// Long Buy trigger:
+// - Short SMA, Long SMA crossover
+//
+// Input configuration
+// - trailingStopPercent: Trailing stop percentage, minimum 0.1%, increments of 0.1%
+// - fastLength: 10; number of periods for the source fast moving average 
+// - slowLength: 30; number of periods for the source slow moving average 
+
+//@version=5
+strategy("Trailing Stop Strategy", overlay=true)
+
+// Constants
+LONG_POSITION = "Long"
+
+// Input parameters
+trailingStopPercent = input.float(1.5, title="Trailing Stop Percentage", minval=0.1, step=0.1)
+fastLength = input.int(10, minval=1, title="Fast Length")
+slowLength = input.int(30, minval=1, title="Slow Length")
+
+// Calculate the stop price by applying the inverse percentage to the price 
+trailStop = strategy.position_avg_price * (1 - trailingStopPercent / 100)
+
+// Long entry: shortMA crosses from under to over the longMA
+longEntrySignal() =>
+    fastMA = ta.sma(close, fastLength)
+    slowMA = ta.sma(close, slowLength)
+    ta.crossover(fastMA, slowMA)
+
+// On signal, enter a long position
+if (longEntrySignal())
+    strategy.entry(LONG_POSITION, strategy.long)
+
+// When long position, create an exit using the trailing stop
+if (strategy.position_size > 0)
+    strategy.exit("Trailing Stop", from_entry=LONG_POSITION, trail_price=trailStop, trail_offset=na)
