@@ -5,27 +5,30 @@
 //
 // Input configuration
 // - trailingStopPercent: Trailing stop percentage, minimum 0.1%, increments of 0.1%
+// - fastLength: 10; number of periods for the source fast moving average 
+// - slowLength: 30; number of periods for the source slow moving average 
 
 //@version=5
 strategy("Trailing Stop Strategy", overlay=true)
 
 // Input parameters
 trailingStopPercent = input.float(1.5, title="Trailing Stop Percentage", minval=0.1, step=0.1)
+fastLength = input.int(10, minval=1, title="Fast Length")
+slowLength = input.int(30, minval=1, title="Slow Length")
 
-// Calculate trailing stop
+// Calculate the stop price by applying the inverse percentage to the price 
 trailStop = strategy.position_avg_price * (1 - trailingStopPercent / 100)
 
-// Generate long entry signal (for demonstration, using a simple moving average crossover)
-shortMA = ta.sma(close, 10)
-longMA = ta.sma(close, 30)
+// Long entry: shortMA crosses from under to over the longMA
+longEntrySignal() =>
+    fastMA = ta.sma(close, fastLength)
+    slowMA = ta.sma(close, slowLength)
+    ta.crossover(fastMA, slowMA)
 
-// shortMA crosses from under the longMA to over it
-longCondition = ta.crossover(shortMA, longMA)
-
-// Execute long trade
-if (longCondition)
+// On signal, enter a long position
+if (longEntrySignal())
     strategy.entry("Long", strategy.long)
 
-// Set trailing stop
+// When long position, create an exit using the trailing stop
 if (strategy.position_size > 0)
     strategy.exit("Trailing Stop", from_entry="Long", trail_price=trailStop, trail_offset=na)
