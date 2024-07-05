@@ -1,10 +1,10 @@
 // Stochastic RSI indicator
 //
 // Input configuration
-// - value: daily close
-// - RSI length: 14 days
-// - kLength: 3 RSI entries
-// - dLength: 3 k entries
+// - rsiLengthInputInput: 14; number of close entries to use when calculating the RSI
+// - stochLengthInput: 3; lookback period for the high and low of the RSI
+// - kLengthInput: 3; smoothing length of the stoch entries
+// - dLengthInput: 3; smoothing length of the  k entries
 //
 // Output:
 // - %K: solid line
@@ -17,19 +17,19 @@
 indicator("Stochastic RSI", shorttitle="StochRSI", overlay=false, timeframe="D", timeframe_gaps=true)
 
 // Input parameters
-rsiLength = input.int(14, title="RSI Length")
-stochLength = input.int(14, title="Stochastic Length")
-kLength = input.int(3, title="%K Length")
-dLength = input.int(3, title="%D Length")
+int rsiLengthInput      = input.int(14, title="RSI Length")
+int stochLengthInput    = input.int(14, title="Stochastic Length")
+int kLengthInput        = input.int(3, title="%K Length")
+int dLengthInput        = input.int(3, title="%D Length")
 
-rsi = ta.rsi(close, rsiLength)
+float rsi = ta.rsi(close, rsiLengthInput)
 
-stochRSI(rsi) =>
-    rsiLowest = ta.lowest(rsi, stochLength)
-    rsiHighest = ta.highest(rsi, stochLength)
-    stochRsi = (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
-    k = ta.sma(stochRsi, kLength)
-    d = ta.sma(k, dLength)
+stochRSI(float rsi) =>
+    float rsiLowest     = ta.lowest(rsi, stochLengthInput)
+    float rsiHighest    = ta.highest(rsi, stochLengthInput)
+    float stochRsi      = (rsi - rsiLowest) / (rsiHighest - rsiLowest) * 100
+    float k             = ta.sma(stochRsi, kLengthInput)
+    float d             = ta.sma(k, dLengthInput)
     [stochRsi, k, d]
 
 [stochRsi, k, d] = stochRSI(rsi)

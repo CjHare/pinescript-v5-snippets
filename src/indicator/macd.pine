@@ -1,10 +1,10 @@
 // MACD indicator
 //
 // Input configuration
-// - source: close; the OHLC input for the fast and slow moving averages
-// - fastLength: 12; number of periods for the source fast moving average 
-// - slowLength: 26; number of periods for the source slow moving average
-// - signalSmoothing: 9; number of periods for the macd moving average
+// - sourceInput: close; the OHLC input for the fast and slow moving averages
+// - fastLengthInput: 12; number of periods for the source fast moving average 
+// - slowLengthInput: 26; number of periods for the source slow moving average
+// - signalSmoothingInput: 9; number of periods for the macd moving average
 //
 // Output:
 // - Macd solid line
@@ -16,28 +16,28 @@
 indicator("MACD", overlay=false, timeframe="D", timeframe_gaps=true)
 
 // Input parameters
-source = input.source(close, title="Source")
-fastLength = input.int(12, minval=1, title="Fast Length")
-slowLength = input.int(26, minval=1, title="Slow Length")
-signalSmoothing = input.int(9, minval=1, title="Signal Smoothing")
+float   sourceInput          = input.source(close, title="Source")
+int     fastLengthInput      = input.int(12, minval=1, title="Fast Length")
+int     slowLengthInput      = input.int(26, minval=1, title="Slow Length")
+int     signalSmoothingInput = input.int(9, minval=1, title="Signal Smoothing")
 
 // MACD calculation
 macd() =>
-    fastMA = ta.ema(source, fastLength)
-    slowMA = ta.ema(source, slowLength)
-    macdLine = fastMA - slowMA
-    signalLine = ta.ema(macdLine, signalSmoothing)
+    fastMA      = ta.ema(sourceInput, fastLengthInput)
+    slowMA      = ta.ema(sourceInput, slowLengthInput)
+    macdLine    = fastMA - slowMA
+    signalLine  = ta.ema(macdLine, signalSmoothingInput)
     [macdLine, signalLine]
 
 [macdLine, signalLine] = macd()
-histogram = macdLine - signalLine
+float histogram = macdLine - signalLine
 
 // Plot the lines
 plot(macdLine, color=color.blue, title="MACD Line")
 plot(signalLine, color=color.orange, title="Signal Line")
 
 // Historgram colored by sign
-histogramColor = color.green
+color histogramColor = color.green
 if(histogram < 0)
     histogramColor := color.red
 

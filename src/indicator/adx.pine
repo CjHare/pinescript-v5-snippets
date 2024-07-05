@@ -1,8 +1,8 @@
 // ADX indicator
 //
 // Input configuration
-// - adxPeriod: 14 days; how many periods are used when calculating the TR, +DM, and -DM
-// - adxSmoothPeriod: 14 days; how many DX values are smoothed to create the ADX line
+// - adxLengthInput: 14 days; how many periods are used when calculating the TR, +DM, and -DM
+// - adxSmoothingLengthInput: 14 days; how many DX values are smoothed to create the ADX line
 //
 // Output:
 // - RSI solid line
@@ -13,24 +13,24 @@
 indicator("Average Directional Index (ADX)", overlay=false, timeframe="D", timeframe_gaps=true)
 
 // Input for ADX period
-adxPeriod = input(14, title="ADX Period", group = "ADX Settings")
-adxSmoothPeriod = input(14, title="ADX Smoothing Period", group = "ADX Settings")
+int adxLengthInput 			= input.int(14, title="ADX Period", 			group = "ADX Settings")
+int	adxSmoothingLengthInput = input.int(14, title="ADX Smoothing Period", 	group = "ADX Settings")
 
-directionalMovement(len) =>
-	up = ta.change(high)
-	down = -ta.change(low)
-	truerange = ta.rma(ta.tr, len)
-	plusDI = fixnan(100 * ta.rma(up > down and up > 0 ? up : 0, len) / truerange)
-	minusDI = fixnan(100 * ta.rma(down > up and down > 0 ? down : 0, len) / truerange)
+directionalMovement(simple int length) =>
+	float up 			= ta.change(high)
+	float down 			= -ta.change(low)
+	float truerange 	= ta.rma(ta.tr, length)
+	float plusDI 		= fixnan(100 * ta.rma(up > down and up > 0 ? up : 0, length) / truerange)
+	float minusDI 		= fixnan(100 * ta.rma(down > up and down > 0 ? down : 0, length) / truerange)
 	[plusDI, minusDI]
 
-adx(directionLength, adxLength) =>
-	[plusDI, minusDI] = directionalMovement(directionLength)
-	sum = plusDI + minusDI
-	adx = 100 * ta.rma(math.abs(plusDI - minusDI) / (sum == 0 ? 1 : sum), adxLength)
-    [adx,plusDI, minusDI]
+adx(simple int directionLength, simple int adxLength) =>
+	[plusDI, minusDI] 	= directionalMovement(directionLength)
+	float sum 			= plusDI + minusDI
+	float adx 			= 100 * ta.rma(math.abs(plusDI - minusDI) / (sum == 0 ? 1 : sum), adxLength)
+    [adx, plusDI, minusDI]
 
-[adx, plusDI, minusDI] = adx(adxSmoothPeriod, adxPeriod)
+[adx, plusDI, minusDI] = adx(adxSmoothingLengthInput, adxLengthInput)
 
 // Plot the ADX line
 plot(adx, title="ADX", color=color.blue)

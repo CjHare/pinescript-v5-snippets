@@ -4,28 +4,28 @@
 // - Short SMA, Long SMA crossover
 //
 // Input configuration
-// - trailingStopPercent: Trailing stop percentage, minimum 0.1%, increments of 0.1%
-// - fastLength: 10; number of periods for the source fast moving average 
-// - slowLength: 30; number of periods for the source slow moving average 
+// - trailingStopPercentInput: Trailing stop percentage, minimum 0.1%, increments of 0.1%
+// - fastLengthInput: 10; number of periods for the source fast moving average 
+// - slowLengthInput: 30; number of periods for the source slow moving average 
 
 //@version=5
 strategy("Trailing Stop Strategy", overlay=true)
 
 // Constants
-LONG_POSITION = "Long"
+string LONG_POSITION = "Long"
 
 // Input parameters
-trailingStopPercent = input.float(1.5, title="Trailing Stop Percentage", minval=0.1, step=0.1)
-fastLength = input.int(10, minval=1, title="Fast Length")
-slowLength = input.int(30, minval=1, title="Slow Length")
+float   trailingStopPercentInput    = input.float(1.5, title="Trailing Stop Percentage", minval=0.1, step=0.1)
+int     fastLengthInput             = input.int(10, minval=1, title="Fast Length")
+int     slowLengthInput             = input.int(30, minval=1, title="Slow Length")
 
 // Calculate the stop price by applying the inverse percentage to the price 
-trailStop = strategy.position_avg_price * (1 - trailingStopPercent / 100)
+float trailingStop = strategy.position_avg_price * (1 - trailingStopPercentInput / 100)
 
 // Long entry: shortMA crosses from under to over the longMA
 longEntrySignal() =>
-    fastMA = ta.sma(close, fastLength)
-    slowMA = ta.sma(close, slowLength)
+    float fastMA = ta.sma(close, fastLengthInput)
+    float slowMA = ta.sma(close, slowLengthInput)
     ta.crossover(fastMA, slowMA)
 
 // On signal, enter a long position
@@ -34,4 +34,4 @@ if (longEntrySignal())
 
 // When long position, create an exit using the trailing stop
 if (strategy.position_size > 0)
-    strategy.exit("Trailing Stop", from_entry=LONG_POSITION, trail_price=trailStop, trail_offset=na)
+    strategy.exit("Trailing Stop", from_entry=LONG_POSITION, trail_price=trailingStop, trail_offset=na)
