@@ -1,5 +1,5 @@
 # PineSript v5 Snippets
-A collection of version 5 PineScript indicators, strategies and reference materials
+A collection of PineScript version 5  indicators, strategies and reference materials
 
 **For academic purposes only, devise your own loosing strategies ;0**
 
